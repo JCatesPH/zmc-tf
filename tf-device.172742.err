@@ -1,0 +1,40 @@
+2019-06-14 13:50:34.377009: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 AVX512F FMA
+2019-06-14 13:50:34.382244: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2100000000 Hz
+2019-06-14 13:50:34.382334: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x55fa9a8aa1e0 executing computations on platform Host. Devices:
+2019-06-14 13:50:34.382346: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): <undefined>, <undefined>
+2019-06-14 13:50:34.513855: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1433] Found device 0 with properties: 
+name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+pciBusID: 0000:3b:00.0
+totalMemory: 15.75GiB freeMemory: 15.44GiB
+2019-06-14 13:50:34.513886: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1512] Adding visible gpu devices: 0
+2019-06-14 13:50:34.514869: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-06-14 13:50:34.514881: I tensorflow/core/common_runtime/gpu/gpu_device.cc:990]      0 
+2019-06-14 13:50:34.514886: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1003] 0:   N 
+2019-06-14 13:50:34.514991: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 6452 MB memory) -> physical GPU (device: 0, name: Tesla V100-PCIE-16GB, pci bus id: 0000:3b:00.0, compute capability: 7.0)
+2019-06-14 13:50:34.516755: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x55fa9b3c7b30 executing computations on platform CUDA. Devices:
+2019-06-14 13:50:34.516773: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): Tesla V100-PCIE-16GB, Compute Capability 7.0
+2019-06-14 13:50:34.517026: I tensorflow/core/common_runtime/direct_session.cc:317] Device mapping:
+/job:localhost/replica:0/task:0/device:XLA_CPU:0 -> device: XLA_CPU device
+/job:localhost/replica:0/task:0/device:GPU:0 -> device: 0, name: Tesla V100-PCIE-16GB, pci bus id: 0000:3b:00.0, compute capability: 7.0
+/job:localhost/replica:0/task:0/device:XLA_GPU:0 -> device: XLA_GPU device
+
+2019-06-14 13:50:34.517985: I tensorflow/core/common_runtime/placer.cc:1059] MatMul: (MatMul)/job:localhost/replica:0/task:0/device:GPU:0
+2019-06-14 13:50:34.518004: I tensorflow/core/common_runtime/placer.cc:1059] a: (Const)/job:localhost/replica:0/task:0/device:GPU:0
+2019-06-14 13:50:34.518012: I tensorflow/core/common_runtime/placer.cc:1059] b: (Const)/job:localhost/replica:0/task:0/device:GPU:0
+2019-06-14 13:50:34.521583: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 6.30G (6765622016 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521604: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 5.67G (6089059840 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521612: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 5.10G (5480153600 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521619: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 4.59G (4932137984 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521631: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 4.13G (4438924288 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521639: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 3.72G (3995031808 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521646: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 3.35G (3595528448 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521652: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 3.01G (3235975424 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521659: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 2.71G (2912377856 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521666: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 2.44G (2621139968 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521673: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 2.20G (2359025920 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521680: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.98G (2123123456 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521687: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.78G (1910811136 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521693: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.60G (1719729920 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521700: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.44G (1547757056 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521706: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.30G (1392981504 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+2019-06-14 13:50:34.521713: E tensorflow/stream_executor/cuda/cuda_driver.cc:806] failed to allocate 1.17G (1253683456 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY: out of memory

@@ -28,12 +28,12 @@ def is_gpu_available(cuda_only = True):
     
     from tensorflow.python.client import device_lib as _device_lib
     
-    if cuda_only:
-        gpu_available=[int(x.name[-1]) for x in _device_lib.list_local_devices() if (x.device_type == 'GPU')]
-        np.save(os.getcwd()+'/multi_temp/gpu_available', gpu_available)
-    else:
-        gpu_available=[int(x.name[-1]) for x in _device_lib.list_local_devices() if (x.device_type == 'GPU' or x.device_type == 'SYCL')]
-        np.save(os.getcwd()+'/multi_temp/gpu_available', gpu_available)
+   # if cuda_only:
+   gpu_available=[int(x.name[-1]) for x in _device_lib.list_local_devices() if (x.device_type == 'GPU')]
+   np.save(os.getcwd()+'/multi_temp/gpu_available', gpu_available)
+   # else:
+   #     gpu_available=[int(x.name[-1]) for x in _device_lib.list_local_devices() if (x.device_type == 'GPU' or x.device_type == 'SYCL')]
+   #     np.save(os.getcwd()+'/multi_temp/gpu_available', gpu_available)
         
 
 
@@ -72,8 +72,8 @@ class MCintegral():
         if available_GPU == None:
             available_GPU = np.load(os.getcwd() + '/multi_temp/gpu_available.npy')
         
-        if len(available_GPU) == 0:
-            raise AssertionError("Your computer does not support GPU calculation.")
+        #if len(available_GPU) == 0:
+        #   raise AssertionError("Your computer does not support GPU calculation.")
         
         # number of trials
         self.num_trials = num_trials
@@ -85,7 +85,8 @@ class MCintegral():
         self.sigma_multiplication = sigma_multiplication
             
         # set up initial conditions
-        self.available_GPU = available_GPU
+        # self.available_GPU = available_GPU
+        self.available_GPU = [0]
 
         # initialize the preparing integrated function depend on its domain dimension
         self.initial(my_func, domain)
