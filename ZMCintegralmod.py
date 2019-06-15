@@ -64,10 +64,10 @@ class MCintegral():
         self.clean_temp()
         
         # check gpu condition
-        p = multiprocessing.Process(target = is_gpu_available)
-        p.daemon = True
-        p.start()
-        p.join()
+        #p = multiprocessing.Process(target = is_gpu_available)
+        #p.daemon = True
+        #p.start()
+        #p.join()
         
         if available_GPU == None:
             available_GPU = np.load(os.getcwd() + '/multi_temp/gpu_available.npy')
@@ -333,7 +333,7 @@ class MCintegral():
                 domain_left = np.array([domain[idim][0] + chunk_id_d_dim[idim] * domain_range[idim] for idim in range(self.dim)], dtype=np.float32)
                     
                 # random variables of sampling points
-                random_domain_values = [tf.random_uniform([self.chunk_size], minval=domain_left[i_dim],                                                          maxval=domain_left[i_dim]+domain_range[i_dim],dtype=tf.float32)                                        for i_dim in range(self.dim)]
+                random_domain_values = [tf.random_uniform([self.chunk_size], minval=domain_left[i_dim], maxval=domain_left[i_dim+domain_range[i_dim],dtype=tf.float32) for i_dim in range(self.dim)]
             
                 # user defined function, tensor calculation
                 user_func = self.my_func(random_domain_values)

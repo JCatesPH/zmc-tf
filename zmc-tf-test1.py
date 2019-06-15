@@ -17,14 +17,14 @@ import ZMCintegral
 #                         job_name=my_job_name,
 #                         task_index=my_task_index)
 
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.Session(config=config)
+myconfig = tf.ConfigProto()
+myconfig.gpu_options.allow_growth = True
+session = tf.Session(config=myconfig)
 
 def testfoo(x):
     return tf.sin(x[0]+x[1]+x[2]+x[3])
 
-MC = ZMCintegral.MCintegral(testfoo, [[0,2], [1,4], [2,3], [4,6]])
+MC = ZMCintegral.MCintegral(testfoo, [[0,2], [1,4], [2,3], [4,6]], available_GPU=[0])
 
 start = time.time()
 result = MC.evaluate()
@@ -35,3 +35,4 @@ print('Result = ', result[0])
 print(' Error = ', result[1])
 print('=====================================')
 print('Time = ', end-start, 'seconds')
+

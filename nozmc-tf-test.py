@@ -15,7 +15,7 @@ sess = tf.Session(config=myconfig)
 
 print(sess.run(c))
 
-print('\na = ', a)
-print('\nb = ', b)
+print('\na = \n', sess.run(a))
+print('\nb = \n', sess.run(b))
 
-print('\nc = ', c)
+print('\nc = \n', sess.run(c))
