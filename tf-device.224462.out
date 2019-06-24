@@ -1,0 +1,22 @@
+[[10. 12.]
+ [49. 64.]]
+
+a = 
+ [[ 1. -2.  3.]
+ [ 4.  5.  6.]]
+
+b = 
+ [[1. 2.]
+ [3. 4.]
+ [5. 6.]]
+
+c = 
+ [[10. 12.]
+ [49. 64.]]
+Device mapping:
+/job:localhost/replica:0/task:0/device:XLA_CPU:0 -> device: XLA_CPU device
+/job:localhost/replica:0/task:0/device:GPU:0 -> device: 0, name: Tesla V100-PCIE-16GB, pci bus id: 0000:3b:00.0, compute capability: 7.0
+/job:localhost/replica:0/task:0/device:XLA_GPU:0 -> device: XLA_GPU device
+MatMul: (MatMul): /job:localhost/replica:0/task:0/device:GPU:0
+a: (Const): /job:localhost/replica:0/task:0/device:GPU:0
+b: (Const): /job:localhost/replica:0/task:0/device:GPU:0

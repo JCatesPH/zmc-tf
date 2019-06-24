@@ -13,4 +13,4 @@
 #SBATCH --gres gpu:v100:1
 
 # run application
-srun python ./nozmc-tf-test.py
+srun python ./zmc-tf-test1.py

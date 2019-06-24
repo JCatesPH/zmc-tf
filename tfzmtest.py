@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[3]:
+# In[46]:
 
 
 '''
@@ -14,7 +14,7 @@ The program requires python tensorflow and numpy to be pre-installed in your
 GPU-supported computer. 
 
 '''
-ZMCIntegral_VERSION = '2.1'
+ZMCIntegral_VERSION = '2.2'
 
 import tensorflow as tf
 from tensorflow.python.eager.context import context, EAGER_MODE, GRAPH_MODE
@@ -22,25 +22,12 @@ import os,sys
 import math
 import numpy as np
 import multiprocessing
-
-from tensorflow.python.client import device_lib
-from multiprocessing import Process, Queue
-
-def get_available_gpus_child_process(gpus_list_queue):
-    local_device_protos = device_lib.list_local_devices()
-    gpus_list = [x.name for x in local_device_protos if x.device_type == 'GPU']
-    gpus_list_queue.put(gpus_list)
-
-
-def get_available_gpus():
-    gpus_list_queue = Queue()
-    proc_get_gpus = Process(target=get_available_gpus_child_process, args=(gpus_list_queue,))
-    proc_get_gpus.start()
-    proc_get_gpus.join()
-    gpus_list = gpus_list_queue.get()
-    return gpus_list
-        
+import time
+     
 # detect if GPU is available on the computer
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 def is_gpu_available(cuda_only = True):
     
     from tensorflow.python.client import device_lib as _device_lib
@@ -56,7 +43,7 @@ def is_gpu_available(cuda_only = True):
 
 class MCintegral():
     
-    def __init__(self, my_func = None, domain = None, available_GPU = None, num_trials = 5, depth = 2, sigma_multiplication = 4):
+    def __init__(self, my_func = None, domain = None, available_GPU = None, num_trials = 5, depth = None, sigma_multiplication = 4,method=None):
 
         '''
         Parameters:
@@ -80,27 +67,48 @@ class MCintegral():
         # clean temp file
         self.clean_temp()
         
-        # check gpu condition
-        p = multiprocessing.Process(target = is_gpu_available)
-        p.daemon = True
-        p.start()
-        p.join()
-        
         if available_GPU == None:
+            # check gpu condition
+            p = multiprocessing.Process(target = is_gpu_available)
+            p.daemon = True
+            p.start()
+            p.join()
+            
             available_GPU = np.load(os.getcwd() + '/multi_temp/gpu_available.npy')
         
         if len(available_GPU) == 0:
             raise AssertionError("Your computer does not support GPU calculation.")
-        
-        # number of trials
-        self.num_trials = num_trials
             
-        # depth of the zooming search
-        self.depth = depth
+        if method == None or method == 'AdaptiveImportanceMC':
+        
+            # number of trials
+            self.num_trials = num_trials
+            
+            # depth of the zooming search
+            if depth==None:
+                self.depth = 2
+            else:
+                self.depth = depth
+             
+            self.method = 'AdaptiveImportanceMC'
+        
+        if method == 'AverageDigging':
+        
+            # number of trials
+            self.num_trials = 1
+            
+            # depth of the zooming search
+            if depth==None:
+                self.depth = 1
+            else:
+                self.depth = depth
+                
+            self.method='AverageDigging'
+        
         
         # recalculate the grid if `stddev` larger than `sigma_mean + sigma_multiplication * sigma`
         self.sigma_multiplication = sigma_multiplication
-            
+           
         # set up initial conditions
         self.available_GPU = available_GPU
 
@@ -128,9 +136,9 @@ class MCintegral():
         
         # Stop digging if there are no more large stddev chunk
         if len(large_std_chunk_id) == 0:
-            return np.sum(MCresult_chunks,0), np.sqrt(np.mean(MCresult_std_chunks**2,0))
+            return np.sum(MCresult_chunks,0), np.sqrt(np.sum(MCresult_std_chunks**2))
 
-        return np.sum(MCresult_chunks,0), np.sqrt(np.mean(MCresult_std_chunks**2,0))
+        return np.sum(MCresult_chunks,0), np.sqrt(np.sum(MCresult_std_chunks**2))
     
     def MCevaluate(self, domain):
 
@@ -173,12 +181,12 @@ class MCintegral():
         # find out the index of chunks that have very large stddev
         if len(np.shape(MCresult))==1:
             threshold = np.mean(MCresult_std) + self.sigma_multiplication * np.std(MCresult_std)
-            large_std_chunk_id = np.where(MCresult_std > threshold)[0]
+            large_std_chunk_id = np.where(MCresult_std >= threshold)[0]
             return MCresult, large_std_chunk_id, MCresult_std
         else:
             MCresult_std = np.transpose(MCresult_std)
             threshold = np.mean(MCresult_std,-1) + self.sigma_multiplication * np.std(MCresult_std,-1)
-            large_std_chunk_id = np.unique(np.concatenate([np.where(MCresult_std[i] > threshold[i])[0] for i in range(len(MCresult_std))]))
+            large_std_chunk_id = np.unique(np.concatenate([np.where(MCresult_std[i] >= threshold[i])[0] for i in range(len(MCresult_std))]))
             return MCresult, large_std_chunk_id, np.transpose(MCresult_std)
         
         
@@ -251,6 +259,7 @@ class MCintegral():
         else:
             self.chunk_size_x = 2
         
+        self.chunk_size_multiplier = int(math.floor((len(self.available_GPU)*192)**(1/self.dim)))
         
     def configure_chunks(self):
         '''receieve self.dim, self.n_grid and self.chunk_size'''
@@ -260,11 +269,8 @@ class MCintegral():
             eg: in Python, you may get 7.99999 from 64^(1/2)
         '''
         
-        def chunk_size_multiplier(num_gpu = len(self.available_GPU)):
-            return int(math.floor((num_gpu*192)**(1/self.dim)))
-        
         self.chunk_size = self.chunk_size_x**self.dim
-        self.n_grid = (self.chunk_size_x*chunk_size_multiplier())**self.dim
+        self.n_grid = (self.chunk_size_x*self.chunk_size_multiplier)**self.dim
         
         # number of samplings in one chunk along one dimension
         self.n_grid_x_one_chunk = int(np.round(self.chunk_size**(1/self.dim)))
@@ -349,9 +355,16 @@ class MCintegral():
                 domain_range = np.array([(domain[idim][1] - domain[idim][0]) / self.n_chunk_x for idim in range(self.dim)], dtype=np.float32)
                 domain_left = np.array([domain[idim][0] + chunk_id_d_dim[idim] * domain_range[idim] for idim in range(self.dim)], dtype=np.float32)
                     
-                # random variables of sampling points
-                random_domain_values = [tf.random_uniform([self.chunk_size], minval=domain_left[i_dim],                                                          maxval=domain_left[i_dim]+domain_range[i_dim],dtype=tf.float32)                                        for i_dim in range(self.dim)]
-            
+                if self.method=='AdaptiveImportanceMC':
+                    # random variables of sampling points
+                    random_domain_values = [tf.random_uniform([self.chunk_size], minval=domain_left[i_dim],                                                          maxval=domain_left[i_dim]+domain_range[i_dim],dtype=tf.float32)                                            for i_dim in range(self.dim)]
+                
+                elif self.method=='AverageDigging':
+                    # sampling specified points
+                    domain_temp = [tf.range(start=0,limit=self.chunk_size_x,delta=1,dtype=tf.float32)/self.chunk_size_x*domain_range[i_dim]                                            +domain_left[i_dim]+domain_range[i_dim]*0.5/(self.chunk_size_x)                                            for i_dim in range(self.dim)]
+                    meshed_domain = tf.meshgrid(*domain_temp)
+                    random_domain_values = [tf.reshape(meshed_domain[i_dim],[self.chunk_size,]) for i_dim in range(self.dim)]
+                    
                 # user defined function, tensor calculation
                 user_func = self.my_func(random_domain_values)
             
@@ -363,4 +376,29 @@ class MCintegral():
                 MCresult.append(tf.scalar_mul(np.prod(domain_range, dtype=np.float32), tf.reduce_mean(user_func, -1)).numpy())
            
         return np.array(MCresult) 
+
+
+
+
+# USER DEFINED FUNCTION
+def my_func(x):
+    return tf.sin(x[0]+x[1]+x[2]+x[3]) #,x[0]+x[1]+x[2]+x[3],x[0]*x[1]*x[2]*x[3],x[0]*(x[1]+x[2])+x[3]
+
+
+# Need this configuration change to work
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+
+tic=time.time()    
+
+# obtaining the result
+result = MCintegral(my_func,[[0,1],[0,2],[0,5],[0,0.6]], available_GPU=[0]).evaluate()
+
+toc=time.time()
+
+# print the formatted result
+print('result = %s    std = %s' % (result[0], result[1]))
+print('time=',toc-tic)
+
 

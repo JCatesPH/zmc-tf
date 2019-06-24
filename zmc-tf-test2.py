@@ -17,12 +17,12 @@ import ZMCintegralmod as ZMCintegral
 #                         job_name=my_job_name,
 #                         task_index=my_task_index)
 
-myconfig = tf.ConfigProto(log_device_placement=True)
+myconfig = tf.ConfigProto()
 myconfig.gpu_options.allow_growth = True
 session = tf.Session(config=myconfig)
 
 def testfoo(x):
-    return tf.sin(x[0]+x[1]+x[2]+x[3])
+    return tf.sin(x[0]+x[1]+x[2]+x[3]), x[0]+x[1]+x[2]+x[3], x[0]*x[1]*x[2]*x[3]
 
 MC = ZMCintegral.MCintegral(testfoo, [[0,1], [0,2], [0,5], [0,0.6]], available_GPU=[0])
 
