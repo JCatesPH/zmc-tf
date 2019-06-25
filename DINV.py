@@ -6,7 +6,7 @@ import time
 
 import tensorflow as tf
 
-
+N=3
 mu = 0.1  # Fermi-level
 hOmg = 0.3  # Photon energy eV
 a = 4  # AA
@@ -30,12 +30,12 @@ cent = np.arange(-(N - 1) / 2, (N - 1) / 2 + 1, 1)
 # tstexp = np.exp(x)
 # inx = np.linalg.inv(x)
 
-# res = np.matmul(inx, x)
+# res = tf.matmul(inx, x)
+
+def heaviside(tensor, arg)
 
 
 def ds(kx, ky, qx, qy, om):
-    N = 3
-
     topkq = -V0 * ( (ky + qy) + complex(0, (kx + qx)) )
     botkq = -V0 * ( (ky + qy) - complex(0, (kx + qx)) )
     innkq = om + complex(0, Gamm) - A * ((kx + qx) ** 2 + (ky + qy) ** 2) - V2
@@ -53,15 +53,15 @@ def ds(kx, ky, qx, qy, om):
     Gink = tf.matrix_diag(topk, k=1) + tf.matrix_diag(botk, k=-1) + tf.matrix_diag(innk) - d
 
     Grkq = tf.matrix_inverse(Ginkq)
-    Gakq = np.transpose(np.conj(Grkq))
+    Gakq = tf.matrix_transpose(Grkq, conjugate=True)
 
-    Grk = np.linalg.inv(Gink)
-    Gak = np.transpose(np.conj(Grk))
+    Grk = tf.matrix_inverse(Gink)
+    Gak = tf.matrix_transpose(Grk, conjugate=True)
 
     fer = np.heaviside(-(d + np.eye(N, N) * (om - mu)), 0)
 
-    in1 = np.matmul(Grkq, np.matmul(Grk, np.matmul(fer, Gak)))
-    in2 = np.matmul(Grkq, np.matmul(fer, np.matmul(Gakq, Gak)))
+    in1 = tf.matmul(Grkq, tf.matmul(Grk, tf.matmul(fer, Gak)))
+    in2 = tf.matmul(Grkq, tf.matmul(fer, tf.matmul(Gakq, Gak)))
     tr = np.trace(in1 + in2)
     # HERE i will divide by DOS, multiply by 2 for spin, and divide by (2pi)^3
 
@@ -73,3 +73,4 @@ start = time.time()
 print('ds = ', ds(0.1, 0.1, 0.01, 0, 0.09))
 end = time.time()
 print('Time :', end - start)
+
