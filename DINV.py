@@ -11,8 +11,8 @@ import ZMCintegral
 N=3
 mu = 0.1  # Fermi-level
 hOmg = 0.3  # Photon energy eV
-a = 4  # AA
-A = 4  # hbar^2/(2m)=4 evAA^2 (for free electron mass)
+a = 4.  # AA
+A = 4. # hbar^2/(2m)=4 evAA^2 (for free electron mass)
 rati = 0.3  # ratio
 eE0 = rati * ((hOmg) ** 2) / (2 * np.sqrt(A * mu))
 # print(eE0)
@@ -36,14 +36,19 @@ cent = np.arange(-(N - 1) / 2, (N - 1) / 2 + 1, 1)
 qy = 0
 
 
-def ds(kx, ky, qx, om):
-    topkq = -V0 * ( (ky + qy) + complex(0, (kx + qx)) )
-    botkq = -V0 * ( (ky + qy) - complex(0, (kx + qx)) )
-    innkq = om + complex(0, Gamm) - A * ((kx + qx) ** 2 + (ky + qy) ** 2) - V2
+def ds(x):
+    # kx , ky , qx , om
+    # x0 , x1 , x2 , x3
 
-    topk = -V0 * (ky + complex(0, kx))
-    botk = -V0 * (ky - complex(0, kx))
-    innk = om + complex(0, Gamm) - A * (kx ** 2 + ky ** 2) - V2
+    #tf.cast(x, tf.complex64)
+
+    topkq = -V0 * (tf.complex(x[1],  (x[0] + x[2])))
+    botkq = -V0 * (tf.complex(x[1], -(x[0] + x[2])))
+    innkq = tf.complex((x[3] - A * (tf.square(x[0] + x[2]) + tf.square(x[1])) - V2), Gamm)
+
+    topk = -V0 * (tf.complex(x[1],  x[0]))
+    botk = -V0 * (tf.complex(x[1], -x[0]))
+    innk = tf.complex((x[3] - A * (tf.square(x[0]) + tf.square(x[1])) - V2), Gamm)
 
     d = hOmg * tf.matrix_diag(cent)
 
@@ -51,10 +56,10 @@ def ds(kx, ky, qx, om):
     #Gink = np.eye(N, N, k=1) * topk + np.eye(N, N, k=-1) * botk + innk * np.eye(N, N) - d
     
     # Identity
-    z=tf.Variable(tf.eye(N,N,[len(kx)],dtype=tf.complex64))
+    z=tf.Variable(tf.eye(N,N,[len(x[0])],dtype=tf.complex64))
 
     # Lower Diag
-    xz=tf.cast(tf.zeros_like(kx),dtype=tf.complex64)
+    xz=tf.cast(tf.zeros_like(x[0]),dtype=tf.complex64)
     zdp=tf.Variable(tf.roll(z,1,1))
     zd=zdp[:,0,2].assign(xz)
 
@@ -83,8 +88,8 @@ def ds(kx, ky, qx, om):
 
     #fer = np.heaviside(-(d + np.eye(N, N) * (om - mu)), 0)
 
-    cond = tf.less(om-mu, 0)
-    muom = tf.where(cond, xz, om-mu)
+    cond = tf.less(x[3] - mu, 0)
+    muom = tf.where(cond, xz, x[3]-mu)
 
     fer = tf.transpose(tf.multiply(tf.transpose(z,perm=[2,1,0]),muom),perm=[2,1,0]) \
             - d
@@ -103,9 +108,6 @@ def ds(kx, ky, qx, om):
 myconfig = tf.ConfigProto(log_device_placement=True)
 myconfig.gpu_options.allow_growth = True
 session = tf.Session(config=myconfig)
-
-def testfoo(x):
-    return tf.sin(x[0]+x[1]+x[2]+x[3])
 
 MC = ZMCintegral.MCintegral(ds, [[0,1], [0,1], [0,1], [0,1]], available_GPU=[0])
 
