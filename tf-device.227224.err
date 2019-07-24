@@ -1,0 +1,58 @@
+2019-06-27 13:56:01.765933: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 AVX512F FMA
+2019-06-27 13:56:01.771034: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2100000000 Hz
+2019-06-27 13:56:01.771120: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x5595b9f05170 executing computations on platform Host. Devices:
+2019-06-27 13:56:01.771132: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): <undefined>, <undefined>
+2019-06-27 13:56:01.902941: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1433] Found device 0 with properties: 
+name: Tesla V100-PCIE-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.38
+pciBusID: 0000:3b:00.0
+totalMemory: 15.75GiB freeMemory: 15.44GiB
+2019-06-27 13:56:01.902973: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1512] Adding visible gpu devices: 0
+2019-06-27 13:56:01.904005: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-06-27 13:56:01.904018: I tensorflow/core/common_runtime/gpu/gpu_device.cc:990]      0 
+2019-06-27 13:56:01.904023: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1003] 0:   N 
+2019-06-27 13:56:01.904133: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1115] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 15022 MB memory) -> physical GPU (device: 0, name: Tesla V100-PCIE-16GB, pci bus id: 0000:3b:00.0, compute capability: 7.0)
+2019-06-27 13:56:01.905996: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x5595baa229e0 executing computations on platform CUDA. Devices:
+2019-06-27 13:56:01.906015: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): Tesla V100-PCIE-16GB, Compute Capability 7.0
+2019-06-27 13:56:01.906289: I tensorflow/core/common_runtime/direct_session.cc:317] Device mapping:
+/job:localhost/replica:0/task:0/device:XLA_CPU:0 -> device: XLA_CPU device
+/job:localhost/replica:0/task:0/device:GPU:0 -> device: 0, name: Tesla V100-PCIE-16GB, pci bus id: 0000:3b:00.0, compute capability: 7.0
+/job:localhost/replica:0/task:0/device:XLA_GPU:0 -> device: XLA_GPU device
+
+2019-06-27 13:56:01.913791: E tensorflow/stream_executor/cuda/cuda_driver.cc:1204] could not retrieve CUDA device count: CUDA_ERROR_NOT_INITIALIZED: initialization error
+2019-06-27 13:56:01.913857: E tensorflow/stream_executor/cuda/cuda_driver.cc:1204] could not retrieve CUDA device count: CUDA_ERROR_NOT_INITIALIZED: initialization error
+2019-06-27 13:56:01.928370: E tensorflow/stream_executor/cuda/cuda_driver.cc:1204] could not retrieve CUDA device count: CUDA_ERROR_NOT_INITIALIZED: initialization error
+2019-06-27 13:56:01.929036: E tensorflow/stream_executor/cuda/cuda_driver.cc:1204] could not retrieve CUDA device count: CUDA_ERROR_NOT_INITIALIZED: initialization error
+2019-06-27 13:56:02.783594: W tensorflow/core/framework/op_kernel.cc:1401] OP_REQUIRES failed at cwise_ops_common.cc:70 : Resource exhausted: OOM when allocating tensor with shape[16777216] and type complex64 on /job:localhost/replica:0/task:0/device:CPU:0 by allocator cpu
+Process Process-2:
+Traceback (most recent call last):
+  File "/home/jmcates/miniconda3/envs/tf/lib/python3.6/multiprocessing/process.py", line 258, in _bootstrap
+    self.run()
+  File "/home/jmcates/miniconda3/envs/tf/lib/python3.6/multiprocessing/process.py", line 93, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/jmcates/zmc-tf/ZMCintegral.py", line 150, in multi_processing
+    result.append(self.MCkernel(domain, i_batch))
+  File "/home/jmcates/zmc-tf/ZMCintegral.py", line 356, in MCkernel
+    user_func = self.my_func(random_domain_values)
+  File "./DINV.py", line 46, in ds
+    botkq = -V0 * (tf.complex(x[1], -(x[0] + x[2])))
+  File "/home/jmcates/miniconda3/envs/tf/lib/python3.6/site-packages/tensorflow/python/ops/math_ops.py", line 840, in r_binary_op_wrapper
+    return func(x, y, name=name)
+  File "/home/jmcates/miniconda3/envs/tf/lib/python3.6/site-packages/tensorflow/python/ops/math_ops.py", line 1078, in _mul_dispatch
+    return gen_math_ops.mul(x, y, name=name)
+  File "/home/jmcates/miniconda3/envs/tf/lib/python3.6/site-packages/tensorflow/python/ops/gen_math_ops.py", line 5857, in mul
+    _six.raise_from(_core._status_to_exception(e.code, message), None)
+  File "<string>", line 3, in raise_from
+tensorflow.python.framework.errors_impl.ResourceExhaustedError: OOM when allocating tensor with shape[16777216] and type complex64 on /job:localhost/replica:0/task:0/device:CPU:0 by allocator cpu [Op:Mul] name: mul/
+Traceback (most recent call last):
+  File "./DINV.py", line 115, in <module>
+    result = MC.evaluate()
+  File "/home/jmcates/zmc-tf/ZMCintegral.py", line 115, in evaluate
+    MCresult = self.importance_sampling_iteration(self.initial_domain, 0)
+  File "/home/jmcates/zmc-tf/ZMCintegral.py", line 121, in importance_sampling_iteration
+    MCresult_chunks, large_std_chunk_id, MCresult_std_chunks = self.MCevaluate(domain)
+  File "/home/jmcates/zmc-tf/ZMCintegral.py", line 168, in MCevaluate
+    MCresult.append(np.load(os.getcwd()+'/multi_temp/result'+str(i_batch)+'.npy'))
+  File "/home/jmcates/miniconda3/envs/tf/lib/python3.6/site-packages/numpy/lib/npyio.py", line 422, in load
+    fid = open(os_fspath(file), "rb")
+FileNotFoundError: [Errno 2] No such file or directory: '/home/jmcates/zmc-tf/multi_temp/result0.npy'
+srun: error: gpu-0-0: task 0: Exited with exit code 1
